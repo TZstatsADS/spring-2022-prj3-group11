@@ -24,7 +24,7 @@ from tensorflow.keras import layers
 from tensorflow.keras import Model
 import keras
 
-def create_model_II(train_clean_images, train_clean_labels, train_noisy_labels, noisy_images, noisy_labels, validation_split, epochs):
+def create_model_II(train_clean_images, train_clean_labels, train_noisy_labels, noisy_images, noisy_labels, validation_split, epochs1, epochs2):
     print("updated2")
     # PHASE 1: Construct label cleaning network using images, and labels as inputs
 
@@ -59,14 +59,19 @@ def create_model_II(train_clean_images, train_clean_labels, train_noisy_labels, 
     model = Model([img_input, noisy_label], out)
 
     # Compile the model
-    model.compile(loss=tf.keras.losses.CategoricalCrossentropy(), metrics=['acc'], optimizer=RMSprop(0.001))
+    model.compile(loss=tf.keras.losses.CategoricalCrossentropy(), metrics=['acc'], optimizer=tf.keras.optimizers.Adam(0.001))
 
     # Fit the model using the clean images
     clean_labels_train = np.eye(10)[train_clean_labels]
     noisy_labels_train = np.eye(10)[train_noisy_labels]
     imgs_train = train_clean_images
+    
+    callbacks = [
+        EarlyStopping(patience=4)
+    ]
 
-    model.fit([imgs_train, noisy_labels_train], clean_labels_train, batch_size=128, epochs=6)
+    model.fit([imgs_train, noisy_labels_train], clean_labels_train, batch_size=128, epochs=epochs1,
+              validation_split=validation_split, callbacks=callbacks)
 
     # Predict the noisy labels, taking the maximum
     cleaned_labels = model.predict([noisy_images, np.eye(10)[noisy_labels]])
@@ -100,15 +105,11 @@ def create_model_II(train_clean_images, train_clean_labels, train_noisy_labels, 
         ]
     )
 
-    final_model.compile(optimizer=tf.keras.optimizers.Nadam(0.001),
+    final_model.compile(optimizer=tf.keras.optimizers.Adam(0.001),
                         loss=tf.keras.losses.CategoricalCrossentropy(),
                         metrics=['accuracy'])
 
-    callbacks = [
-        EarlyStopping(patience=2)
-    ]
-
-    history = final_model.fit(x_train, y_train, batch_size=128, epochs=epochs,
+    history = final_model.fit(x_train, y_train, batch_size=128, epochs=epochs2,
                               validation_split=validation_split, callbacks=callbacks)
 
     return final_model, history
@@ -121,10 +122,11 @@ def test_model_II(test_images, test_labels, modelII):
 
     return accuracy_score(predictions, test_labels)
 
-def save_model_I(modelII, foldername):
+def save_model_II(modelII, foldername):
 
     modelII.save('../output/' + foldername)
 
-def load_model_I(foldername):
+def load_model_II(foldername):
 
     return keras.models.load_model("../output/" + foldername)
+    
