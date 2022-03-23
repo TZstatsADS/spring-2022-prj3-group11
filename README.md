@@ -5,7 +5,7 @@
 
 Term: Spring 2022
 
-+ Team # 11
++ Team #11
 + Team members
 	+ Limpijankit, Marvin
 	+ Liu, Jiachen
