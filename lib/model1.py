@@ -24,6 +24,8 @@ from tensorflow.keras import layers
 from tensorflow.keras import Model
 import keras
 
+from keras.regularizers import l2
+
 def create_model_I(train_images, train_labels, validation_split, epochs):
     print("updated")
     x_train = train_images
@@ -31,29 +33,45 @@ def create_model_I(train_images, train_labels, validation_split, epochs):
 
     modelI = tf.keras.Sequential(
         [
-            tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255),
+        tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255),
 
-            tf.keras.layers.Conv2D(32, (3, 3), padding='same', activation="relu", input_shape=(32, 32, 3)),
-            tf.keras.layers.MaxPooling2D((2, 2), strides=2),
-            tf.keras.layers.Dropout(0.25),
-
-            tf.keras.layers.Conv2D(64, (3, 3), padding='same', activation="relu"),
-            tf.keras.layers.MaxPooling2D((2, 2), strides=2),
-            tf.keras.layers.Dropout(0.25),
-
-            tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(128, activation="relu"),
-            tf.keras.layers.Dense(10, activation="softmax")
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform',
+                               padding='same', kernel_regularizer=l2(0.001), input_shape=(32, 32, 3)),
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform',
+                               padding='same', kernel_regularizer=l2(0.001)),
+        tf.keras.layers.MaxPooling2D((2, 2)),
+        tf.keras.layers.Dropout(0.2),
+        
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform',
+                 padding='same', kernel_regularizer=l2(0.001)),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform',
+                 padding='same', kernel_regularizer=l2(0.001)),
+        tf.keras.layers.MaxPooling2D((2, 2)),
+        tf.keras.layers.Dropout(0.2),
+        
+        tf.keras.layers.Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform',
+                 padding='same', kernel_regularizer=l2(0.001)),
+        tf.keras.layers.Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform',
+                 padding='same', kernel_regularizer=l2(0.001)),
+        tf.keras.layers.MaxPooling2D((2, 2)),
+        tf.keras.layers.Dropout(0.2),
+        
+        
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(128, activation="relu",
+                kernel_initializer='he_uniform', kernel_regularizer=l2(0.001)),
+        tf.keras.layers.Dense(10, activation="softmax")
 
         ]
     )
 
-    modelI.compile(optimizer=tf.keras.optimizers.Nadam(0.001),
-                   loss=tf.keras.losses.CategoricalCrossentropy(),
-                   metrics=['accuracy'])
+
+    opt = SGD(learning_rate=0.001, momentum=0.9)
+    modelI.compile(optimizer=opt, loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
     callbacks = [
-        EarlyStopping(patience=2)
+        EarlyStopping(patience=3)
     ]
 
     history = modelI.fit(x_train, y_train, batch_size=128, epochs=epochs,
