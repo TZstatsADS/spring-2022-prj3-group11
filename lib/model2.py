@@ -112,7 +112,7 @@ def create_model_II(train_clean_images, train_clean_labels, train_noisy_labels, 
     history = final_model.fit(x_train, y_train, batch_size=128, epochs=epochs2,
                               validation_split=validation_split, callbacks=callbacks)
 
-    return final_model, history
+    return final_model, history, model
 
 def test_model_II(test_images, test_labels, modelII):
 
