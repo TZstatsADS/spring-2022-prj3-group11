@@ -13,7 +13,7 @@ Term: Spring 2022
 	+ Zhang, Nichole
 	+ Zhang, Xile
 
-+ Project summary: In this project, we created two models to identify graphs into night categories. For model 1, we created a basic CNN model and worked on the noisy labels. For model 2, we used a Multi-Task Label Cleaning Architecture. We first input the images and all the labels to find the pattern behind the noisy labels and correct all the noise. Then, rerun model 1 on the cleaned labels.
++ Project summary: In this project, we created two models to identify graphs into eight categories. For model 1, we created a basic CNN model and worked on the noisy labels. For model 2, we used a Multi-Task Label Cleaning Architecture. We first input the images and all the labels to find the pattern behind the noisy labels and correct all the noise. Then, rerun model 1 on the cleaned labels.
 	
 **Contribution statement**: ([default](doc/a_note_on_contributions.md)) 
 + Limpijankit, Marvin: worked on Model II building, label correction model. Major contributer.
